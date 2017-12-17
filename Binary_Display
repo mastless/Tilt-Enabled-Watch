@@ -1,0 +1,99 @@
+#include <Time.h>
+#include <TimeLib.h>
+
+
+#define TIME_HEADER  "T"   // Header tag for serial time sync message
+#define TIME_REQUEST 7 // ASCII bell character requests a time sync message 
+
+
+const int hourLEDs[] = {13,12,11,10}; 
+const int minuteLEDs[] = {9,8,7,6,5,4};
+const int secondLED = 3; 
+
+
+
+long timerStart; 
+long timerNow; 
+long timerDiff; 
+
+void setup() {
+  // Reserve pins 4-13 for Binary Clock LED's
+  for (int i = 0; i < 4; ++i) {
+    pinMode(hourLEDs[i], OUTPUT); 
+    digitalWrite(hourLEDs[i], LOW); 
+  }
+
+  for (int i = 0; i < 6; ++i) {
+    pinMode(minuteLEDs[i], OUTPUT); 
+    digitalWrite(minuteLEDs[i], LOW); 
+  }
+
+  pinMode(secondLED, OUTPUT); 
+  digitalWrite(secondLED, LOW); 
+
+  timerStart = -1 * (8 * 3600000 + 8 * 60000);
+
+  
+  pinMode(2, OUTPUT); 
+  analogWrite(2,200);
+
+}
+
+void loop() {
+  timerNow = millis();
+  timerDiff = timerNow - timerStart;  
+
+  updateHour();
+  updateMinute(); 
+  blinkSecondLED(); 
+  
+}
+
+void updateHour() {
+  int decimalMinute = timerDiff / 3600000; 
+  int minute0 = decimalMinute % 2; 
+  decimalMinute = decimalMinute / 2;
+  int minute1 = decimalMinute % 2; 
+  decimalMinute = decimalMinute / 2; 
+  int minute2 = decimalMinute % 2; 
+  decimalMinute = decimalMinute / 2; 
+  int minute3 = decimalMinute % 2; 
+
+   digitalWrite(hourLEDs[0], minute3); 
+  digitalWrite(hourLEDs[1], minute2); 
+  digitalWrite(hourLEDs[2], minute1); 
+  digitalWrite(hourLEDs[3], minute0); 
+
+}
+
+
+void updateMinute() {
+  int decimalMinute = (timerDiff % 3600000) / 60000; 
+  int minute0 = decimalMinute % 2; 
+  decimalMinute = decimalMinute / 2;
+  int minute1 = decimalMinute % 2; 
+  decimalMinute = decimalMinute / 2; 
+  int minute2 = decimalMinute % 2; 
+  decimalMinute = decimalMinute / 2; 
+  int minute3 = decimalMinute % 2; 
+  decimalMinute= decimalMinute / 2; 
+  int minute4 = decimalMinute % 2; 
+  decimalMinute= decimalMinute / 2; 
+  int minute5 = decimalMinute % 2; 
+
+  digitalWrite(minuteLEDs[0], minute5); 
+  digitalWrite(minuteLEDs[1], minute4); 
+  digitalWrite(minuteLEDs[2], minute3); 
+  digitalWrite(minuteLEDs[3], minute2); 
+  digitalWrite(minuteLEDs[4], minute1); 
+  digitalWrite(minuteLEDs[5], minute0); 
+  analogWrite(2,200);
+ 
+}
+
+void blinkSecondLED() {
+   digitalWrite(secondLED, HIGH); 
+   delay(500); 
+   digitalWrite(secondLED, LOW); 
+   delay(500); 
+}
